@@ -3,14 +3,12 @@ package liquibase.integration.spring;
 import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.resource.AbstractResourceAccessor;
 import liquibase.resource.InputStreamList;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ContextResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.*;
 import org.springframework.core.io.support.ResourcePatternUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.SortedSet;
@@ -19,6 +17,7 @@ import java.util.TreeSet;
 public class SpringResourceAccessor extends AbstractResourceAccessor {
 
     private final ResourceLoader resourceLoader;
+    private String rootClasspath;
 
     public SpringResourceAccessor(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -95,6 +94,13 @@ public class SpringResourceAccessor extends AbstractResourceAccessor {
         if (resource instanceof ClassPathResource) {
             return ((ClassPathResource) resource).getPath();
         }
+        if(resource instanceof FileSystemResource){
+            try {
+                return finalizeSearchPath(resource.getURL().toExternalForm().replaceFirst(".*!", ""));
+            } catch (IOException e) {
+                throw new UnexpectedLiquibaseException("Cannot determine resource path for " + resource.getDescription());
+            }
+        }
 
         //have to fall back to figuring out the path as best we can
         try {
@@ -149,13 +155,23 @@ public class SpringResourceAccessor extends AbstractResourceAccessor {
      * Ensure the given searchPath is a valid searchPath.
      * Default implementation adds "classpath:" and removes duplicated /'s and classpath:'s
      */
-    protected String finalizeSearchPath(String searchPath) {
-        searchPath = "classpath:"+searchPath;
-        searchPath = searchPath
-                .replace("\\", "/")
-                .replaceAll("//+", "/")
-                .replace("classpath:classpath:", "classpath:");
-
+    protected String finalizeSearchPath(String searchPath) throws IOException {
+        if (!searchPath.startsWith("file:")) {
+            searchPath = "classpath:" + searchPath;
+            searchPath = searchPath
+                    .replace("\\", "/")
+                    .replaceAll("//+", "/")
+                    .replace("classpath:classpath:", "classpath:");
+        } else {
+            if (rootClasspath == null) {
+                try {
+                    rootClasspath = getClass().getResource("/").toURI().toString();
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
+                }
+            }
+            searchPath = searchPath.replace(rootClasspath, "classpath:");
+        }
         return searchPath;
     }
 
