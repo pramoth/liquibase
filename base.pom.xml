@@ -42,7 +42,16 @@
     <issueManagement>
         <url>http://liquibase.jira.com/browse/CORE</url>
     </issueManagement>
-
+    <distributionManagement>
+        <repository>
+            <id>Geniustree Release</id>
+            <url>https://nexus.geniustree.io/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>Geniustree Snapshots</id>
+            <url>https://nexus.geniustree.io/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     <scm>
         <connection>scm:git:git@github.com:liquibase/liquibase.git</connection>
         <url>scm:git:git@github.com:liquibase/liquibase.git</url>
