@@ -5,9 +5,8 @@
 
     <parent>
         <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-base</artifactId>
-        <version>${liquibase.version}</version>
-        <relativePath>../base.pom.xml</relativePath>
+        <artifactId>liquibase-root</artifactId>
+        <version>4.3.0.5.GT</version>
     </parent>
 
     <artifactId>liquibase-core</artifactId>

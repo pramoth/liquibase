@@ -4,9 +4,8 @@
 
     <parent>
         <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-base-module</artifactId>
-        <version>${liquibase.version}</version>
-        <relativePath>../base-module.pom.xml</relativePath>
+        <artifactId>liquibase-root</artifactId>
+        <version>4.3.0.5.GT</version>
     </parent>
 
     <description>Configures Liquibase for use in a CDI environment</description>
@@ -14,6 +13,11 @@
     <artifactId>liquibase-cdi</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
             <artifactId>weld-se</artifactId>
@@ -111,26 +115,6 @@
                             <goal>jar</goal>
                         </goals>
                         <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-                <configuration>
-                    <artifactId>${project.artifactId}</artifactId>
-                    <file>${project.build.directory}/${project.artifactId}-${version}.jar</file>
-                    <sources>${project.build.directory}/${project.artifactId}-${version}-sources.jar</sources>
-                    <javadoc>${project.build.directory}/${project.artifactId}-${version}-javadoc.jar</javadoc>
-                    <pomFile>${project.build.directory}/release.pom.xml</pomFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>custom-install</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
